@@ -89,6 +89,26 @@
       ""
       name)))
 
+(defn split-first-rest-value
+  "For each non-empty key (not \"\") in input map splits the seq
+   in value to first and rest."
+  [grouped]
+  (let [nonempty (filter #(not= (key %) "") grouped)
+        splitted (map #(vector (first (val %)) (rest (val %))) nonempty)]
+    splitted))
+
+(defn get-links-to-open
+  "Gets the links which should be open. Input links should be
+   a seq of strings with URIs. Result is a seq with 2 seqs of strings,
+   first which should be open and second is the rest which should not."
+  [links]
+  (let [grouped  (group-by #(get-server-name %) links)
+        spaces   (get grouped "") ; spaces to be put to the end
+        splitted (split-first-rest-value grouped)
+        to-open  (map first splitted)
+        to-save  (flatten (map second splitted))]
+    [to-open (concat to-save spaces)]))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
