@@ -65,6 +65,16 @@
   (let [n (- (count colls) 1)]
     (nth colls n)))
 
+(defn get-server-name
+  "Gets the name of server from the http[s] link. If could not be found,
+   returns empty string."
+  [link]
+  (let [pat #"(https?://){0,1}([^/]+)/?"
+        [_ _ name] (re-find pat link)]
+    (if (nil? name)
+      ""
+      name)))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]

@@ -29,3 +29,16 @@
     (is (= (count backs) 4))
     (is (= (first backs) "s1"))
     (is (= (second backs) "s2"))))
+
+(deftest get-server-name-test
+  (let [data ["http://www.server1.com/link/rel"
+              "https://server2.org/link/something"
+              "www.server1.com/blahblahblah"]
+        names (map get-server-name data)]
+    (is (= (count names) 3))
+    (let [[name1 name2 name3] names]
+      (is (= name1 "www.server1.com")
+          (= name2 "server2.org"))
+      (is (= name2 "server2.org"))
+      (is (= name3 "www.server1.com"))
+      (is (= name1 name3)))))
