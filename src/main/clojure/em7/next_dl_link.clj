@@ -27,25 +27,39 @@
   "Partitions the input sequence of strings by empty strings,
    resulting in multiple seqs of strings."
   [coll]
-  (loop [c coll
-         prev-empty? false
-         cur-vec []
-         vecs []]
+
+  ; FIXME this function is a bit ugly. I even needed to put comments
+  ; here so my brain wouldn't blow when I see it again after a year.
+  ; Maybe there should be a better functional way than just a loop.
+  
+  (loop [c coll             ; the collection of all lines
+         prev-empty? false  ; was the previous line empty?
+         cur-vec []         ; the vector wit current part
+         vecs []]           ; vector with all parts <Vec of Vectors>
+    ; if the end is reached, just add the current vector to the end of
+    ; vecs and return
     (if (empty? c)
       (let [vs (conj vecs cur-vec)]
         vs)
 
+    ; if current line is empty, set the empty flag, add it to current
+    ; partition and continue
       (if (string/blank? (first c))
         (recur (rest c)
                true
                (conj cur-vec (first c))
                vecs)
-        
+
+    ; previous was empty, current is non-empty. Set the previous emtpy flag
+    ; to false, create a new partition and put previous partition to vecs
         (if prev-empty?
           (recur (rest c)
                  false
                  [(first c)]
                  (conj vecs cur-vec))
+          
+    ; previous was not empty, current is non-empty. Normal case, add current
+    ; line to the current partition and continue
           (recur (rest c)
                  false
                  (conj cur-vec (first c))
